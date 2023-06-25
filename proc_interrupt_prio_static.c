@@ -19,11 +19,18 @@ void proc_interrupt(struct proc * p)
         // insere o processo no final da mesma fila
         enqueue(ready, p);
     }
-    else
+    else if (p->queue == 2)
     {
         // Processo estava na segunda fila (ready2)
         // insere o processo no final da mesma fila
         enqueue(ready2, p);
+    }
+    else
+    {
+        // Caso o processo não estivesse em nenhuma das filas de aptos
+        // (o que não deveria ocorrer no contexto do PRIO STATIC),
+        // insere o processo no final da primeira fila por padrão
+        enqueue(ready, p);
     }
 
     // alterando o status para apto
