@@ -21,21 +21,34 @@ struct proc *scheduler(struct proc *current)
 {
     struct proc *selected;
 
-    // Verificar se há processos bloqueados aguardando E/S
-    if (!isempty(blocked))
+    if (current != NULL)
     {
-        struct proc *blockedProc = dequeue(blocked);
-        enqueue(ready, blockedProc); // Inserir o processo na Fila 1 (ready)
+        switch (current->state)
+        {
+            case READY:
+                enqueue(ready2, current);
+                count_ready_in(current);
+                break;
+            case BLOCKED:
+                enqueue(blocked, current);
+                count_blocked_in(current);
+                break;
+            case FINISHED:
+                enqueue(finished, current);
+                count_finished_in(current);
+                break;
+            default:
+                printf("@@ ERRO no estado de saída do processo %d\n", current->pid);
+        }
     }
 
-    // Verificar se houve preempção
-    if (current != NULL && current->remaining_time < MAX_TIME)
+    if (isempty(ready) && isempty(ready2))
     {
-        enqueue(ready2, current); // Inserir o processo na Fila 2 (ready2)
+        return NULL;
     }
 
     // Selecionar um processo para execução
-    if (!isempty(ready) && (isempty(ready2) || rand()%100 <= 80))
+    if (!isempty(ready) && (isempty(ready2) || make_rand(100) <= 80))
     {
         selected = dequeue(ready); // Selecionar um processo da Fila 1 (ready) com 80% de probabilidade
     }
@@ -44,5 +57,7 @@ struct proc *scheduler(struct proc *current)
         selected = dequeue(ready2); // Selecionar um processo da Fila 2 (ready2) com 20% de probabilidade
     }
 
+    count_ready_out(selected);
+    selected->state = RUNNING;
     return selected;
 }
