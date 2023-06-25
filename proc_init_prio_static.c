@@ -11,10 +11,10 @@
 extern int NPROC;
 
 // Utilizando as variáveis globais das filas definidas no 'main'
-extern struct queue *ready;    // fila de aptos
-extern struct queue *ready2;   // segunda fila de aptos
-extern struct queue *blocked;  // fila de bloqueados
-extern struct queue *finished; // fila de finalizados
+extern struct queue * ready;    // fila de aptos
+extern struct queue * ready2;   // segunda fila de aptos
+extern struct queue * blocked;  // fila de bloqueados
+extern struct queue * finished; // fila de finalizados
 
 // Tempo máximo de execução total de um processo
 extern int MAX_TIME;
@@ -33,7 +33,7 @@ void proc_init()
         p->tid = createproc_thread(p);
 
         // Verifica a prioridade do processo com base no tempo restante
-        if (p->remaining_time <= 0.2 * MAX_TIME)
+        if (p->remaining_time <= (0.2 * MAX_TIME))
         {
             p->queue = 1;
             // Adiciona o processo na primeira fila de aptos
@@ -45,5 +45,7 @@ void proc_init()
             // Adiciona o processo na segunda fila de aptos
             enqueue(ready2, p);
         }
+
+        count_ready_in(p);
     }
 }
